@@ -1,0 +1,50 @@
+
+# Logistic Regression
+log_reg = Pipeline(steps=[
+    ('preprocessor', preprocessor),
+    ('classifier', LogisticRegression(max_iter=1000, solver='liblinear', class_weight='balanced'))
+])
+
+log_reg.fit(X_train, y_train)
+
+y_pred_lr = log_reg.predict(X_test)
+y_pred_proba_lr = log_reg.predict_proba(X_test)[:, 1]
+
+print("\n=== Logistic Regression Results ===")
+print("ROC-AUC:", roc_auc_score(y_test, y_pred_proba_lr))
+print("Classification Report:\n", classification_report(y_test, y_pred_lr))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred_lr))
+
+# Save Logistic Regression model
+joblib.dump(log_reg, "credit_risk_logreg.pkl")
+print("✅ Logistic Regression model saved as credit_risk_logreg.pkl")
+
+
+
+# LightGBM
+
+lgb_clf = Pipeline(steps=[
+    ('preprocessor', preprocessor),
+    ('classifier', LGBMClassifier(
+        objective='binary',
+        boosting_type='gbdt',
+        learning_rate=0.05,
+        num_leaves=31,
+        n_estimators=500,
+        class_weight='balanced'
+    ))
+])
+
+lgb_clf.fit(X_train, y_train)
+
+y_pred_lgb = lgb_clf.predict(X_test)
+y_pred_proba_lgb = lgb_clf.predict_proba(X_test)[:, 1]
+
+print("\n=== LightGBM Results ===")
+print("ROC-AUC:", roc_auc_score(y_test, y_pred_proba_lgb))
+print("Classification Report:\n", classification_report(y_test, y_pred_lgb))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred_lgb))
+
+# Save LightGBM model
+joblib.dump(lgb_clf, "credit_risk_lgbm.pkl")
+print("✅ LightGBM model saved as credit_risk_lgbm.pkl")
