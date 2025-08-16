@@ -1,0 +1,54 @@
+from flask import Flask, request, jsonify
+import joblib
+import pandas as pd
+
+# Initialize Flask app
+app = Flask(__name__)
+
+# Load trained models (pipelines already include preprocessing)
+log_reg_model = joblib.load("credit_risk_logreg.pkl")
+lgb_model = joblib.load("credit_risk_lgbm.pkl")
+
+# Threshold for decision
+THRESHOLD = 0.5
+
+@app.route("/")
+def home():
+    return {"message": "Credit Risk API is running 🚀"}
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    try:
+        # Get JSON input
+        data = request.get_json()
+
+        # Convert to DataFrame
+        applicant = pd.DataFrame([data])
+
+        # Predict with Logistic Regression
+        pd_lr = log_reg_model.predict_proba(applicant)[:, 1][0]
+        decision_lr = "Reject" if pd_lr >= THRESHOLD else "Approve"
+
+        # Predict with LightGBM
+        pd_lgb = lgb_model.predict_proba(applicant)[:, 1][0]
+        decision_lgb = "Reject" if pd_lgb >= THRESHOLD else "Approve"
+
+        # Return results as JSON
+        result = {
+            "Logistic Regression": {
+                "Probability_of_Default": round(float(pd_lr), 3),
+                "Decision": decision_lr
+            },
+            "LightGBM": {
+                "Probability_of_Default": round(float(pd_lgb), 3),
+                "Decision": decision_lgb
+            }
+        }
+
+        return jsonify(result)
+
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+if __name__ == "__main__":
+    app.run(debug=True)
