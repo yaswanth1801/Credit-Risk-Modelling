@@ -1,0 +1,39 @@
+import joblib
+import pandas as pd
+
+# Example new applicant (must match training features!)
+applicant = {
+    "person_age": 35,
+    "person_income": 65000,
+    "person_emp_length": 6,
+    "loan_amnt": 15000,
+    "loan_int_rate": 12.5,
+    "loan_percent_income": 0.25,
+    "cb_person_cred_hist_length": 10,
+    "person_home_ownership": "MORTGAGE",
+    "loan_intent": "EDUCATION",
+    "loan_grade": "B",
+    "cb_person_default_on_file": "N"
+}
+
+X_new = pd.DataFrame([applicant])
+
+# Logistic Regression 
+log_reg_loaded = joblib.load("credit_risk_logreg.pkl")
+pd_lr = log_reg_loaded.predict_proba(X_new)[:, 1][0]
+print(f"Logistic Regression Probability of Default = {pd_lr:.3f}")
+
+#  LightGBM 
+lgb_loaded = joblib.load("credit_risk_lgbm.pkl")
+pd_lgb = lgb_loaded.predict_proba(X_new)[:, 1][0]
+print(f" LightGBM Probability of Default = {pd_lgb:.3f}")
+
+
+# Threshold-based decision
+threshold = 0.5  
+
+decision_lr = "Reject" if pd_lr >= threshold else "Approve"
+decision_lgb = "Reject" if pd_lgb >= threshold else "Approve"
+
+print(f"Decision (Logistic Regression): {decision_lr}")
+print(f"Decision (LightGBM): {decision_lgb}")
