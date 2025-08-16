@@ -56,9 +56,3 @@ Perfect 👍 Since your current **Credit Risk Modelling** README is very minimal
 * **LightGBM** achieved the best performance with a high ROC-AUC score.
 * **Loan-to-income ratio** and **employment length** were strong predictors of default.
 * The Flask app provides a user-friendly way to get real-time predictions for new applicants.
-
-
-
-
-
-👉 Would you like me to also create a **short "GitHub tagline/description" (one-liner)** that appears under your repo name, so it looks neat when people land on the page?
