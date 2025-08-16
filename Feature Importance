@@ -1,0 +1,27 @@
+import matplotlib.pyplot as plt
+
+
+# Feature importance plot for LightGBM
+lgb.plot_importance(lgb_clf, max_num_features=15, importance_type='gain')
+plt.title("Top 15 Features - LightGBM")
+plt.show()
+
+
+import shap
+
+# Create SHAP explainer for LightGBM
+explainer = shap.TreeExplainer(lgb_clf)
+shap_values = explainer.shap_values(X_train_processed)
+
+# Summary plot (global feature importance)
+shap.summary_plot(shap_values, X_train_processed, feature_names=preprocessor.get_feature_names_out())
+
+# Force plot for a single prediction (local explanation)
+# Example: Explain the first test sample
+shap.initjs()
+# Corrected version for binary classification
+shap.force_plot(
+    explainer.expected_value,          # No [1] indexing here
+    shap_values[0, :],                  # SHAP values for first sample
+    feature_names=preprocessor.get_feature_names_out()
+)
