@@ -1,0 +1,20 @@
+mport numpy as np
+from sklearn.metrics import precision_score, recall_score, f1_score
+
+# Probabilities from your LightGBM model
+y_scores = y_pred_proba_lgb  # Already computed earlier
+
+thresholds = np.arange(0.1, 0.91, 0.05)
+results = []
+
+for t in thresholds:
+    y_pred_thresh = (y_scores >= t).astype(int)
+    prec = precision_score(y_test, y_pred_thresh)
+    rec = recall_score(y_test, y_pred_thresh)
+    f1 = f1_score(y_test, y_pred_thresh)
+    results.append((t, prec, rec, f1))
+
+# Display results
+print(f"{'Threshold':<10}{'Precision':<12}{'Recall':<12}{'F1-Score':<12}")
+for t, prec, rec, f1 in results:
+    print(f"{t:<10.2f}{prec:<12.3f}{rec:<12.3f}{f1:<12.3f}")
