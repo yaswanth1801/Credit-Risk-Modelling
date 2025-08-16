@@ -1,0 +1,13 @@
+rom sklearn.model_selection import StratifiedKFold, cross_val_score
+
+# StratifiedKFold to preserve class distribution
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+
+cv_scores = cross_val_score(
+    lgb_clf, X_train_processed, y_train, 
+    scoring='roc_auc', cv=cv
+)
+
+print("Cross-validation ROC-AUC scores:", cv_scores)
+print("Mean ROC-AUC:", cv_scores.mean())
+print("Std deviation:", cv_scores.std())
